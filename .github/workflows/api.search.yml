@@ -1,0 +1,29 @@
+name: YouTube Search Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      query:
+        description: "Search query for YouTube"
+        required: true
+        type: string
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install yt-dlp pytube youtube-search-python
+
+      - name: Run YouTube search
+        run: |
+          python api-search.py -q "${{ github.event.inputs.query }}"
