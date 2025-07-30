@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoneTube - Просмотр видео</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo">NoneTube</div>
+        <div class="nav">
+            <a href="index.html">Главная</a>
+            <a href="search.html">Поиск</a>
+            <a href="#" class="active">Просмотр</a>
+        </div>
+        <div class="user-avatar" id="userAvatar"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="video-container">
+            <div class="loader" id="loader">
+                <img src="img/loader.gif" alt="Загрузка...">
+            </div>
+            <iframe id="videoFrame" style="display:none;"></iframe>
+            <div class="video-info" id="videoInfo">
+                <h1 id="videoTitle">Загрузка...</h1>
+                <div class="video-meta">
+                    <span id="videoAuthor"></span>
+                    <span id="videoViews"></span>
+                    <span id="videoDate"></span>
+                </div>
+                <p id="videoDescription"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="copyright">© 2025 Endlad</div>
+        <div class="links">
+            <a href="https://github.com/yourusername/notetube" target="_blank">GitHub</a>
+            <a href="#" id="downloadApp">Скачать приложение</a>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        if (!document.cookie.includes('username')) {
+            alert("Авторизуйтесь для использования");
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userAvatar').style.backgroundImage = `url(${localStorage.getItem('avatar') || 'img/default-avatar.png'})`;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('id');
+            
+            if (videoId) {
+                loadVideo(videoId);
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Мониторинг ошибок в консоли
+        const originalConsoleError = console.error;
+        console.error = function() {
+            if (arguments[0].includes('Failed to load resource') || 
+                arguments[0].includes('status of 500')) {
+                console.log('Обнаружена ошибка 500, перезагружаем iframe...');
+                const videoFrame = document.getElementById('videoFrame');
+                if (videoFrame) {
+                    const currentSrc = videoFrame.src;
+                    videoFrame.src = '';
+                    setTimeout(() => {
+                        videoFrame.src = currentSrc;
+                    }, 1000);
+                }
+            }
+            originalConsoleError.apply(console, arguments);
+        };
+    </script>
+</body>
+</html>

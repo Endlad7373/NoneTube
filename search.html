@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoneTube - Поиск</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo">NoneTube</div>
+        <div class="nav">
+            <a href="index.html">Главная</a>
+            <a href="search.html" class="active">Поиск</a>
+            <a href="#">Просмотр</a>
+        </div>
+        <div class="user-avatar" id="userAvatar"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Введите запрос...">
+            <button onclick="performSearch()">Поиск</button>
+        </div>
+        <div class="loader" id="loader" style="display:none;">
+            <img src="img/loader.gif" alt="Загрузка...">
+        </div>
+        <div class="video-grid" id="videoGrid"></div>
+    </div>
+
+    <div class="footer">
+        <div class="copyright">© 2025 Endlad</div>
+        <div class="links">
+            <a href="https://github.com/yourusername/notetube" target="_blank">GitHub</a>
+            <a href="#" id="downloadApp">Скачать приложение</a>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        if (!document.cookie.includes('username')) {
+            alert("Авторизуйтесь для использования");
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userAvatar').style.backgroundImage = `url(${localStorage.getItem('avatar') || 'img/default-avatar.png'})`;
+            
+            // Поиск при нажатии Enter
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Проверяем параметры URL для поиска
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('q');
+            if (searchQuery) {
+                document.getElementById('searchInput').value = searchQuery;
+                performSearch();
+            }
+        }
+        
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                window.history.pushState({}, '', `search.html?q=${encodeURIComponent(query)}`);
+                loadSearchResults(query);
+            }
+        }
+    </script>
+</body>
+</html>
